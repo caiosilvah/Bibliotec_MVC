@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 namespace Bibliotec.Models
 {
     public class Categoria
-    {    
+    {
         [Key]
-        int CategoriaId {get ; set ;}
-        string? Nome {get; set;}
- 
+        public int CategoriaID { get; set; }
+        public string? Nome { get; set; }
+
     }
-        // Atributos:
-        // int CategoriaID
-        // string Nome
 }

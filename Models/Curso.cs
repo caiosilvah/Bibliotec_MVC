@@ -7,18 +7,10 @@ using System.Threading.Tasks;
 namespace Bibliotec.Models
 {
     public class Curso
-    {
+    {  
         [Key]
-        public int CursoID;
-
-        public string? Nome;
-
-        public char Periodo;
-
+        public int CursoID { get; set; }
+        public string? Nome { get; set; }
+        public char Periodo { get; set; }   
     }
-        // Atributos:
-        // int CursoID
-        // string Nome
-        // char Periodo
-        
 }

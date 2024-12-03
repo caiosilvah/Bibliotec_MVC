@@ -1,64 +1,53 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Bibliotec.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
-namespace Bibliotec.contexts
+namespace Bibliotec.Contexts
 {
-    
-        //Classe que tera as informacoes do banco de dados 
+    // Classe que terá as informações do banco de dados
     public class Context : DbContext
     {
-        //Criar o metodo construtor
+        // Criar um método construtor
         public Context(){
-
         }
 
-        public Context(DbContextOptions<Context> options) : base(options)
-        {
-
+        public Context(DbContextOptions<Context> options) : base(options){
         }
 
-        //OnConfiguring -> possui a configuracap da conexao com o banco de dados          
-       protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-                //colocar as informacoes do banco
+        // OnConfiguring -> Possui a configuracao da conexao com
+        //o banco de dados
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
+                // colocar as informacoes do banco
+                // As configuracoes existem?
+                if(!optionsBuilder.IsConfigured){
+                    // A string de conexao do banco de dados:
+                    // Data Source => Nome do servidor do banco de dados
+                    // Initial Catalog => Nome do banco de dados
+                    // User Id e Password => Informacoes de acesso ao servidor do banco de dados
+                    // ALUNOS:
+                    //  optionsBuilder.UseSqlServer(@"
+                    //  Data Source=DESKTOP-LAO5MIJ\\SQLEXPRESSTEC; 
+                    //  Initial Catalog = Bibliotec_mvc; 
+                    //  User Id=sa; 
+                    //  Password=123; 
+                    //  Integrated Security=true; TrustServerCertificate = true");
+                    // SAMANTA:
+                    // optionsBuilder.UseSqlServer("Data Source=DESKTOP-LAO5MIJ\\SQLEXPRESSTEC; Initial Catalog = Bibliotec; User Id=sa; Password=abc123; Integrated Security=true; TrustServerCertificate = true");
+                optionsBuilder.UseSqlServer("Data Source=NOTE32-S28\\SQLEXPRESS; Initial Catalog = Bibliotec_mvc; User Id=sa; Password=123; TrustServerCertificate = true");
 
-                //as configuracoes existem?
-             if (optionsBuilder.IsConfigured){
-                // A string de conexao do banco de dados:
-                // Data Source => Nome do servidor do banco de dados
-                // Initial Catalog => Nome do banco de dados
-                // User id e Password => informacoes de acesso ao servidor do banco de dados
-                optionsBuilder.UseSqlServer
-                (@"Data Source=NOTE32-S28\\SQLEXPRESS; 
-                Initial Catalog = Bibliotec_mvc; 
-                User Id=sa;
-                Password=123;
-                Integrated Security=true;
-                TrustServerCertificate = true");
-             }
-               
+                }
         }
-        protected override void OnConfiguring
-        (DbContextOptionsBuilder optionsBuilder){
-            //
-         public DbSet<Categoria> Categoria {get; set;}
-            //curso
-        public DbSet<Curso> Curso {get; set;}
-            //livro
-         public DbSet<Livro> Livro {get; set;}
-            //usuario
-        public DbSet<Usuario> Usuario {get; set;}
-            //LivroCategoria
-        public DbSet<LivroCategoria> LivroCategoria {get; set;}
-            //LivroRerseva
-        public DbSet<LivroReserva> LivroReserva {get; set;}
-        }
-
-
-    }
     
+        // As referencias das nossas tabelas no banco de dados:
+        public DbSet<Categoria> Categoria {get; set;}
+        // Curso
+        public DbSet<Curso> Curso {get; set;}
+        // Livro
+        public DbSet<Livro> Livro {get; set;}
+        // Usuario
+        public DbSet<Usuario> Usuario {get; set;}
+        // LivroCategoria
+        public DbSet<LivroCategoria> LivroCategoria {get; set;}
+        // LivroReserva
+        public DbSet<LivroReserva> LivroReserva {get; set;}
+    }
 }
