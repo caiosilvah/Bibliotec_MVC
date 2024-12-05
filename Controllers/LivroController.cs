@@ -127,6 +127,69 @@ namespace Bibliotec_mvc.Controllers
             return LocalRedirect("/Cadastro");
         }
 
+        [Route("Editar/{id}")]
+        public IActionResult Editar(int id ){
+
+            ViewBag.Admin = HttpContext.Session.GetString("Admin")!;
+
+            ViewBag.CategoriasDoSistema = context.Categoria.ToList();
+
+            
+
+            // LivroID == 3
+
+            // Buscar quem e o tal do id numero 3:
+            Livro livroAtualizado = context.Livro.FirstOrDefault(livro => livro.LivroID == id)!;
+
+            //Buscar as categorias que o livroAtualizado possui 
+            var categoriasDoLivroEncontrado = context.LivroCategoria.Where(identificadorLivro => identificadorLivro.LivroID == id).Select(livro => livro.Categoria).ToList();
+
+            //Quero pegar as informacoes do meu livro selecionado e mandar para a minha View
+            ViewBag.Livro = livroAtualizado;
+            ViewBag.Categoria = categoriasDoLivroEncontrado;
+
+
+            return View();
+        }
+
+        //Metodo que atualiza as informacoes do livro
+        [Route ("Atualizar/{id}")]
+        public IActionResult Atualizar(IFormCollection form, int id, IFormFile imagem){
+            //Buscar o livro especifico peloID
+            Livro livroAtualizado = context.Livro.FirstOrDefault(livro => livro.LivroID == id)!;
+
+            livroAtualizado.Nome = form ["Nome"].ToString();
+            livroAtualizado.Escritor = form["Escritor"];
+            livroAtualizado.Editora = form["Editora"];
+            livroAtualizado.Idioma = form["Idioma"];
+            livroAtualizado.Descricao = form["Descricao"];
+
+            //Upload de imagem
+            if(imagem.Length > 0){
+                //Definir o caminho da minha imagem do livro atual que eu quero alterar:
+                var caminhoImagem = Path.Combine("wwwroot/images/Livros", imagem.FileName);
+
+                //Verificar se o usuario colocou uma imagem para atualizar o livro
+                if(string.IsNullOrEmpty (livroAtualizado.Imagem)){
+                    //Caso exista, ela ira ser apagada 
+                    var caminhoImagemAntiga = Path.Combine("wwwroot/images/Livros", livroAtualizado.Imagem);
+                    //Ver ser existe uma imagem no caminho antigo
+                    if(System.IO.File.Exists(caminhoImagemAntiga)){
+                        System.IO.File.Delete(caminhoImagemAntiga);
+                    }
+                }
+
+                //Salvar a imagem nova
+                using(var stream = new FileStream(caminhoImagem, FileMode.Create)){
+                    imagem.CopyTo(stream);
+                }
+
+                //Subir essa mudanca para o meu banco de deaos
+                livroAtualizado.Imagem = imagem.FileName;
+                
+            }
+        }
+
 
         // [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         // public IActionResult Error()
