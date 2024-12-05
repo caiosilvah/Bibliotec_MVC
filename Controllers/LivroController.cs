@@ -165,7 +165,8 @@ namespace Bibliotec_mvc.Controllers
             livroAtualizado.Descricao = form["Descricao"];
 
             //Upload de imagem
-            if(imagem.Length > 0){
+            if(imagem ! = null && imagem.Length > 0){
+
                 //Definir o caminho da minha imagem do livro atual que eu quero alterar:
                 var caminhoImagem = Path.Combine("wwwroot/images/Livros", imagem.FileName);
 
@@ -186,8 +187,58 @@ namespace Bibliotec_mvc.Controllers
 
                 //Subir essa mudanca para o meu banco de deaos
                 livroAtualizado.Imagem = imagem.FileName;
-                
+
             }
+
+            //CATEGORIAS:
+
+            //PRIMEIRO: Precisamos pegar as categorias selecionadas do usuario
+            var categoriasSelecionadas = form["Categoria"].ToList();
+            //SEGUNDO: Pegaremos as categorias ATUAIS do livro
+            var categoriasAtuais = context. LivroCategoria.Where(livro => livro.LivroID == id).ToList();
+            //TERCEIRO: Removermos as categorias antigas
+            foreach(var categoria in categoriasAtuais){
+                if(!categoriasSelecionadas.Contains(categoria.CategoriaID.ToString())){
+                    //Nos vamos resolver a categoria do nosso context
+                    context.LivroCategoria.Remove(categoria);
+                }                                                                                                               
+            }
+            //QUARTO: Adicionaremos as novas categorias 
+            foreach(var categoria in categoriasSelecionadas){
+                //Verificando se nao existe a categoria nesse livro
+                if(!categoriasAtuais.Any(c => c.CategoriaID.ToString() == categoria)){
+                    context.LivroCategoria.Add(new LivroCategoria{
+                        LivroID = id,
+                        CategoriaID = int.Parse(categoria)
+                    });
+                }
+            }
+
+            context.SaveChanges();
+
+            return LocalRedirect("/Livro");
+
+        }
+
+        //METODO DE EXCLUIR O LIVRO
+        [Route("Excluir")]
+        public IActionResult Excluir(int id){
+            //Buscar qual o livro do id que precisamos exluir
+            Livro livroEncontrado = context.Livro.First(livro => livro.LivroID == id);
+
+            //Buscar as categorias desse livro:
+            var categoriasDoLivro = context.LivroCategoria.Where(livro => livro.LivroID == id).ToList();
+
+            //Precisa excluir primeiro o registro da tabela intermediaria
+            foreach(var categoria in categoriasDoLivro){
+                context.LivroCategoria.Remove(categoria);
+            }
+
+            context.Livro.Remove(livroEncontrado);
+
+            context.SaveChanges();
+
+            return LocalRedirect("/Livro");
         }
 
 
